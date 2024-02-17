@@ -255,7 +255,7 @@ flights %>%
 
 ***To make the graph, I plotted the all airports, then based on the graph and my knowledge of what the US looks like, I filtered out points based on longitude and latitude from the graph until it was only the Contiguous United States. I did use Google Maps to double check what the US looked like from a longitude/latitude standpoint.***
 
-```{r}
+```{r q7_graph}
 usAirports <- airports %>%
   select(lon, lat, tzone) %>%
   filter(lon < 0, lat < 50, lon > -140)
@@ -272,6 +272,25 @@ ggplot(usAirports, mapping = aes(x = lon, y = lat, color = lon)) +
     Once you have created the visualization, in no more than one paragraph, describe what you think the point of this visualization might be.
     *Hint:* The visualization uses the variable `arrival`, which is not included in the `flights` data frame.
     You will have to create `arrival` yourself, it is a categorical variable that is equal to `"ontime"` when `arr_delay <= 0` and `"delayed"` when `arr_delay > 0`.
+
+***The point of this visualization is to display how much more arrivals are delayed if departure's are delayed. This is shown by the ontime or delayed being graphed by departure delay, seeing a scale of departure delays next to whether or not the arrival was delayed. In the graph you can see when the arrival was on time, there was very little departure delay and when there was high departure delays (especially over an hour) the arrival was always delayed.***
+
+***For the graph, I filtered to just show the destinations as shown in the example plot. I limited arrival delays to real numbers, then mutated the arrival variable to be TRUE when on time, and FALSE when delayed, then plotted a box plot with facet grid.***
+    
+```{r q8_graph}
+myFlights <- flights %>%
+  filter(dest == c("PHL", "RDU")) %>%
+  filter(arr_delay <=0 | arr_delay >= 0) %>%
+  mutate(arrival = arr_delay <=0)
+
+ggplot(myFlights, mapping = aes(x = arrival, y = dep_delay, color = dest)) +
+  geom_boxplot() +
+  facet_grid(dest ~ origin) +
+  labs(x = "Arrival Ontime", #because I couldn't figure out how to make the variable 'arrival' be anything but boolean, and this label makes the booleans more logical for viewers
+       y = "Departure Delay", 
+       title = "On time performance of NYC flights", 
+       subtitle = "December 2013")
+```
 
 ![](img/plot-to-recreate.png)
 
