@@ -251,6 +251,23 @@ flights %>%
     [This Wikipedia article](https://en.wikipedia.org/wiki/List_of_extreme_points_of_the_United_States) can help, but you're welcomed to use other resources as well.
     Make sure to cite whatever resource you use.
 
+***The longitudes of airports in this data set are primarily around the -90 to -70 range, as well as around -120. These represent the East and West Coasts of the Contiguous United States, with more around the East Coast, Florida, around the East Coast of New York, the Great Lakes, and California. Airports are more sparse in the mid-west US (latitudes around -115 to -90). This tells us that airports are built more by beaches and the coastline, and less in the middle of the country.***
+
+***To make the graph, I plotted the all airports, then based on the graph and my knowledge of what the US looks like, I filtered out points based on longitude and latitude from the graph until it was only the Contiguous United States. I did use Google Maps to double check what the US looked like from a longitude/latitude standpoint.***
+
+```{r}
+usAirports <- airports %>%
+  select(lon, lat, tzone) %>%
+  filter(lon < 0, lat < 50, lon > -140)
+
+ggplot(usAirports, mapping = aes(x = lon, y = lat, color = lon)) +
+  geom_point() +
+  labs(x = "Longitude", 
+       y = "Latitude", 
+       color = "Longitude",
+       title = "Distribution of Airports in Contiguous United States")
+```
+
 8.  **Question 8 (15 pts)** - Recreate the plot included below using the `flights` data.
     Once you have created the visualization, in no more than one paragraph, describe what you think the point of this visualization might be.
     *Hint:* The visualization uses the variable `arrival`, which is not included in the `flights` data frame.
