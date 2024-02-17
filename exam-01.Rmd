@@ -1,7 +1,7 @@
 ---
 title: "Take Home Exam #1"
 author: "Sarah Winne"
-date: "February 16, 2024"
+date: "February 17, 2024"
 output: html_document
 ---
 
@@ -130,9 +130,13 @@ flights %>%
 
 ***The logic for making the table is similar to question 1. Left join with airlines by carrier, then count and arrange in descending order of number of flights, with the name of the airlines.***
 
+```{r carriers}
+carriers <- flights %>%
+  left_join(airlines, by = "carrier") 
+```
+
 ```{r q2_Table}
-flights %>% 
-  left_join(airlines, by = "carrier") %>%
+carriers %>% 
   count(name) %>%
   arrange(desc(n))
 ```
@@ -140,18 +144,12 @@ flights %>%
 3.  **Question 3 (10 points)** - Consider only flights that have non-missing arrival delay information.
     Your answer should include the name of the carrier in addition to the carrier code and the values asked.
     
-***First I did a left join with flights and airlines to connect the airline names to carrier codes, then filtered so only numbers (non missing values) would be in the arrival delay section. I saved this to 'flightsArrDelay'. Then I grouped by name and carrier, summarized the mean of arrival delays, and arranged for ease of reading the table. I saved this to 'meanArrDelays' and used this data set to find the answers.***
-    
-```{r flights_with_arrival_delays}
-flightsArrDelay <- flights %>% 
-  left_join(airlines, by = "carrier") %>%
-  filter(arr_delay <= 0 | arr_delay >= 0)
-```
+***First I used the carriers data set I previous made so the airline names and carrier codes were connected. Then I grouped by name and carrier, summarized the mean of arrival delays (ignoring NA values), and arranged for ease of reading the table. I saved this to 'meanArrDelays' and used this data set to find the answers.***
 
 ```{r mean_arrival_delays}
-meanArrDelays <- flightsArrDelay %>%
+meanArrDelays <- carriers %>%
   group_by(name, carrier) %>%
-  summarize(mean = mean(arr_delay)) %>%
+  summarize(mean = mean(arr_delay, na.rm = TRUE)) %>%
   arrange(desc(mean))
 ```
 
@@ -170,10 +168,18 @@ The carrier with the lowest mean arrival delay was ***Alaska Airlines*** (carrie
 
 ***First I connected the flights, weather, and airportNames data sets so I would have the aiport names, temperatures, and departure times all together. Then after sorting and finding January 9, from the Honolulu airport, was the largest delay departure, I filtered to just the temperatures on January 9, at the Honolulu airport, then found the mean temperature.***
 
+```{r nameFlights}
+namesFlights <- flights %>% 
+  left_join(airportNames, by = c("dest" = "faa"))
+```
+
+```{r weatherNamesFlights}
+weatherNamesFlights <- namesFlights %>% 
+  left_join(weather)
+```
+
 ```{r q4_Table}
-flights %>% 
-  left_join(weather) %>%
-  left_join(airportNames, by = c("dest" = "faa")) %>%
+weatherNamesFlights %>% 
   filter(month == 1, day == 9, name == "Honolulu Intl") %>% #month, day, and origin airport of highest departure delay
   summarize(meanTemp = mean(temp))
 ```
@@ -219,11 +225,10 @@ flights %>%
 
 6.  **Question 6 (15 points)** - Find the flight with the longest air time.
 
-***First I joined flights with airportNames and planes to have airtime, airport names, and number of seats in the same data set. Then I selected airtime, airport names, and number of seats and arranged them in descending order by air time, so the longest would be first, then I sliced it so only the flight with the longest air time would show.***
+***First I joined flights with airportNames (using previously made namesFlights data set) and planes to have airtime, airport names, and number of seats in the same data set. Then I selected airtime, airport names, and number of seats and arranged them in descending order by air time, so the longest would be first, then I sliced it so only the flight with the longest air time would show.***
 
 ```{r q6_Table}
-flights %>% 
-  left_join(airportNames, by = c("dest" = "faa")) %>%
+namesFlights %>% 
   merge(planes) %>%
   select(air_time, name, seats) %>%
   arrange(desc(air_time)) %>%
@@ -297,3 +302,14 @@ ggplot(myFlights, mapping = aes(x = arrival, y = dep_delay, color = dest)) +
 **Extra Credit (5 pts)** - Create a visualization that effectively shows if there is a relationship between the average daily departure delay and the average daily temperature for all three New York city airports.
 Your answer must be given in a single pipe.
 (You should only spend time on this question once you have finished answering the others)
+
+```{r bonus}
+flights %>%
+  left_join(weather) %>%
+ggplot(flights, mapping = aes(x = temp, y = dep_delay)) +
+  geom_point(alpha = 0.1) +
+  facet_wrap( ~ origin) +
+  labs(x = "Temperature",
+       y = "Departure Delays", 
+       title = "Title")
+```
