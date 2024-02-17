@@ -165,6 +165,18 @@ The carrier with the lowest mean arrival delay was ***Alaska Airlines*** (carrie
 
 4.  **Question 4 (10 points)** - What was the mean temperature at the origin airport on the day with the highest departure delay?
     Your answer should include the name of origin airport, the date with the highest departure delay, and the mean temperature on that day.
+    
+***The mean temperature at Honolulu Intl (origin airport) on January 9 was 45.95***
+
+***First I connected the flights, weather, and airportNames data sets so I would have the aiport names, temperatures, and departure times all together. Then after sorting and finding January 9, from the Honolulu airport, was the largest delay departure, I filtered to just the temperatures on January 9, at the Honolulu airport, then found the mean temperature.***
+
+```{r}
+flights %>% 
+  merge(weather) %>%
+  left_join(airportNames, by = c("dest" = "faa")) %>%
+  filter(month == 1, day == 9, name == "Honolulu Intl") %>% #month, day, and origin airport of highest departure delay
+  summarize(meanTemp = mean(temp))
+```
 
 5.  **Question 5 (15 points)** - Consider breaking the day into four time intervals: 12:01am-6am, 6:01am-12pm, 12:01pm-6pm, 6:01pm-12am.
 
