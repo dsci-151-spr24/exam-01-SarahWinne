@@ -172,7 +172,7 @@ The carrier with the lowest mean arrival delay was ***Alaska Airlines*** (carrie
 
 ```{r q4_Table}
 flights %>% 
-  merge(weather) %>%
+  left_join(weather) %>%
   left_join(airportNames, by = c("dest" = "faa")) %>%
   filter(month == 1, day == 9, name == "Honolulu Intl") %>% #month, day, and origin airport of highest departure delay
   summarize(meanTemp = mean(temp))
@@ -180,11 +180,42 @@ flights %>%
 
 5.  **Question 5 (15 points)** - Consider breaking the day into four time intervals: 12:01am-6am, 6:01am-12pm, 12:01pm-6pm, 6:01pm-12am.
 
+***For each time interval, I filtered to only contain data within that time interval, then used count to display if the departure delay time was negative or not in that time. To get the proportions, I divided the TRUE(is delayed) count by the total sum of all n in that time interval.***
+
+```{r q5_time_interval_one_Table}
+flights %>% 
+  filter(hour <= 5 | (hour == 6 & minute ==0)) %>%
+  count(dep_delay > 0)
+```
+
+```{r q5_time_interval_two_Table}
+flights %>% 
+  filter((hour <= 11 & hour >= 6) | (hour == 12 & minute ==0)) %>%
+  count(dep_delay > 0)
+```
+
+```{r q5_time_interval_three_Table}
+flights %>% 
+  filter((hour <= 17 & hour >= 12) | (hour == 18 & minute ==0)) %>%
+  count(dep_delay > 0)
+```
+
+```{r q5_time_interval_four_Table}
+flights %>% 
+  filter(hour >= 18) %>%
+  count(dep_delay > 0)
+```
+
     a\.
     Calculate the proportion of flights that are delayed at departure at each of these time intervals.
+***For 12:01 AM to 6 AM, 1819/8970 (or 20.28%) of flights were delayed at departure.***
+***For 6:01 AM to 12 PM, 33796/133691 (or 25.28%) of flights were delayed at departure.***
+***For 12:01 PM to 6 PM, 59570/134288 (or 44.36%) of flights were delayed at departure.***
+***For 6:01 PM to 12 AM, 37349/74596 (or 50.07%) of flights were delayed at departure.***
 
     b\.
     Comment on how the likelihood of being delayed change throughout the day?
+***It seems to be more likely to have a delayed flight later in the day, but there are also less flights in the earliest hours and a few less later than the middle sections (from 6AM to 6PM). Overall, likelyhood of being delayed as it gets later increases.***
 
 6.  **Question 6 (15 points)** - Find the flight with the longest air time.
 
