@@ -139,12 +139,29 @@ flights %>%
 
 3.  **Question 3 (10 points)** - Consider only flights that have non-missing arrival delay information.
     Your answer should include the name of the carrier in addition to the carrier code and the values asked.
+    
+***First I did a left join with flights and airlines to connect the airline names to carrier codes, then filtered so only numbers (non missing values) would be in the arrival delay section. I saved this to 'flightsArrDelay'. Then I grouped by name and carrier, summarized the mean of arrival delays, and arranged for ease of reading the table. I saved this to 'meanArrDelays' and used this data set to find the answers.***
+    
+```{r}
+flightsArrDelay <- flights %>% 
+  left_join(airlines, by = "carrier") %>%
+  filter(arr_delay <= 0 | arr_delay >= 0)
+```
+
+```{r}
+meanArrDelays <- flightsArrDelay %>%
+  group_by(name, carrier) %>%
+  summarize(mean = mean(arr_delay)) %>%
+  arrange(desc(mean))
+```
 
     a\.
     Which carrier had the highest mean arrival delay?
+The carrier with the highest mean arrival delay was ***Frontier Airlines*** (carrier code F9), with a mean arrival delay of 21.9207048
 
     b\.
     Which carrier had the lowest mean arrival delay?
+The carrier with the lowest mean arrival delay was ***Alaska Airlines*** (carrier code AS), with a mean arrival delay of -9.9308886
 
 4.  **Question 4 (10 points)** - What was the mean temperature at the origin airport on the day with the highest departure delay?
     Your answer should include the name of origin airport, the date with the highest departure delay, and the mean temperature on that day.
