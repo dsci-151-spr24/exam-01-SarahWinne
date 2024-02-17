@@ -108,12 +108,12 @@ The main data is in the `flights` data frame, but there are additional data sets
 
 ***To make the table list the name of the airport rather than code, I selected the airport code and name from the airports data set and did a left join by matching the destination(from flights data set) with the airport code, then arranged the table to be in descending order, with the name of the airport.***
 
-```{r}
+```{r airportNames}
 airportNames <- airports %>%
   select(faa, name)
 ```
 
-```{r}
+```{r q1_Table}
 flights %>% 
   left_join(airportNames, by = c("dest" = "faa")) %>%
   count(name) %>%
@@ -130,7 +130,7 @@ flights %>%
 
 ***The logic for making the table is similar to question 1. Left join with airlines by carrier, then count and arrange in descending order of number of flights, with the name of the airlines.***
 
-```{r}
+```{r q2_Table}
 flights %>% 
   left_join(airlines, by = "carrier") %>%
   count(name) %>%
@@ -142,13 +142,13 @@ flights %>%
     
 ***First I did a left join with flights and airlines to connect the airline names to carrier codes, then filtered so only numbers (non missing values) would be in the arrival delay section. I saved this to 'flightsArrDelay'. Then I grouped by name and carrier, summarized the mean of arrival delays, and arranged for ease of reading the table. I saved this to 'meanArrDelays' and used this data set to find the answers.***
     
-```{r}
+```{r flights_with_arrival_delays}
 flightsArrDelay <- flights %>% 
   left_join(airlines, by = "carrier") %>%
   filter(arr_delay <= 0 | arr_delay >= 0)
 ```
 
-```{r}
+```{r mean_arrival_delays}
 meanArrDelays <- flightsArrDelay %>%
   group_by(name, carrier) %>%
   summarize(mean = mean(arr_delay)) %>%
@@ -170,7 +170,7 @@ The carrier with the lowest mean arrival delay was ***Alaska Airlines*** (carrie
 
 ***First I connected the flights, weather, and airportNames data sets so I would have the aiport names, temperatures, and departure times all together. Then after sorting and finding January 9, from the Honolulu airport, was the largest delay departure, I filtered to just the temperatures on January 9, at the Honolulu airport, then found the mean temperature.***
 
-```{r}
+```{r q4_Table}
 flights %>% 
   merge(weather) %>%
   left_join(airportNames, by = c("dest" = "faa")) %>%
@@ -188,14 +188,28 @@ flights %>%
 
 6.  **Question 6 (15 points)** - Find the flight with the longest air time.
 
+***First I joined flights with airportNames and planes to have airtime, airport names, and number of seats in the same data set. Then I selected airtime, airport names, and number of seats and arranged them in descending order by air time, so the longest would be first, then I sliced it so only the flight with the longest air time would show.***
+
+```{r q6_Table}
+flights %>% 
+  left_join(airportNames, by = c("dest" = "faa")) %>%
+  merge(planes) %>%
+  select(air_time, name, seats) %>%
+  arrange(desc(air_time)) %>%
+  slice(1)
+```
+
     a\.
     How long is this flight?
+***This flight was 695 minutes, which is 11 hours and 35 minutes long.***
 
     b\.
     What city did it fly to?
+***This flight flew to Honolulu.***
 
     c\.
     How many seats does the plane that flew this flight have?
+***The plane that flew this flight had 377 seats.***
 
 7.  **Question 7 (15 pts)** - The `airports` data frame contains information on a large number of primarily American airports.
     These data include location information for these airports in the form of latitude and longitude coordinates.
