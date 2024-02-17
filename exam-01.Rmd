@@ -125,6 +125,17 @@ flights %>%
     Make a table that lists these in descending order of frequency and shows the number of flights for each airline.
     In your narrative mention the names of the airlines as well.
     *Hint:* You can use the `airlines` dataset to look up the airline name based on `carrier` code.
+    
+***The five airlines with the most flights departing from NYC airports in 2013 were United Air Lines, JetBlue Airways, ExpressJet Airlines, Delta Air Lines, and American Airlines.***
+
+***The logic for making the table is similar to question 1. Left join with airlines by carrier, then count and arrange in descending order of number of flights, with the name of the airlines.***
+
+```{r}
+flights %>% 
+  left_join(airlines, by = "carrier") %>%
+  count(name) %>%
+  arrange(desc(n))
+```
 
 3.  **Question 3 (10 points)** - Consider only flights that have non-missing arrival delay information.
     Your answer should include the name of the carrier in addition to the carrier code and the values asked.
