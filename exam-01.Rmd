@@ -102,14 +102,21 @@ The main data is in the `flights` data frame, but there are additional data sets
 ## Questions
 
 1.  **Question 1 (10 points)** - What are the ten most common destinations for flights from NYC airports in 2013?
-
-***The ten most common destinations for flights from NYC airports in 2013 were to ***
-
    Make a table that lists these in descending order of frequency and shows the number of flights heading to each airport.
+
+***The ten most common destinations for flights from NYC airports in 2013 (in this order) were to Chicago, Atlanta, Los Angeles, Boston, Orlando, Charlotte, San Francisco, Hollywood, Miami, and Washington DC.***
+
+***To make the table list the name of the airport rather than code, I selected the airport code and name from the airports data set and did a left join by matching the destination(from flights data set) with the airport code, then arranged the table to be in descending order, with the name of the airport.***
+
+```{r}
+airportNames <- airports %>%
+  select(faa, name)
+```
 
 ```{r}
 flights %>% 
-  count(dest) %>%
+  left_join(airportNames, by = c("dest" = "faa")) %>%
+  count(name) %>%
   arrange(desc(n)) %>%
   slice(1:10)
 ```
